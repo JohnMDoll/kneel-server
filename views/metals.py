@@ -1,3 +1,6 @@
+import sqlite3
+import models
+
 METALS = [
     {
         "id": 1,
@@ -29,7 +32,21 @@ METALS = [
 
 def get_all_metals():
     """returns all listed metal objects"""
-    return METALS
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        db_cursor.execute(
+            "SELECT * FROM Metals"
+        )
+
+    dataset = db_cursor.fetchall()
+    metals = []
+    for row in dataset:
+        metal = models.Metal(row['id'], row['metal'], row['price'] )
+
+        metals.append(metal.__dict__)
+
+    return metals
 
 def get_single_metal(id):
     """returns an metal matching an metal id"""
@@ -38,3 +55,24 @@ def get_single_metal(id):
         if metal["id"] == id:
             requested_metal = metal
     return requested_metal
+
+def update_metal(id, new_metal):
+    """replaces existing db metal entry with new data"""
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+        UPDATE Metals
+            SET
+                metal = ?,
+                price = ?
+        WHERE id = ?
+        """, (new_metal['metal'], new_metal['price'], id, ),
+        )
+
+        rows_affected = db_cursor.rowcount
+
+    if rows_affected == 0:
+        return False
+    return True

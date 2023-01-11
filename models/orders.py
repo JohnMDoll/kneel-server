@@ -6,3 +6,6 @@ class Order():
         self.size_id = size_id
         self.style_id = style_id
         self.timestamp = timestamp
+        self.metal = None
+        self.size = None
+        self.style = None

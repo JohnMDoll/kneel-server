@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from views import (
     get_all_metals,
     get_single_metal,
+    update_metal,
     get_all_orders,
     get_single_order,
     create_order,
@@ -95,17 +96,24 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         """Handles PUT requests to the server """
-        self._set_headers(204)
+        # self._set_headers(204)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
         post_body = json.loads(post_body)
 
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
-
+        response = True
         # Update a single order from the list
         if resource == "orders":
             update_order(id, post_body)
+        elif resource == "metals":
+            response = update_metal(id, post_body)
+
+        if response is False:
+            self._set_headers(404)
+        else:
+            self._set_headers(204)
 
         # Encode the new item and send in response
         self.wfile.write("".encode())
