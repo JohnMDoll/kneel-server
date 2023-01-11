@@ -1,5 +1,5 @@
 import sqlite3
-from models import Order
+import models
 
 ORDERS = [
     {
@@ -14,7 +14,7 @@ ORDERS = [
 
 def get_all_orders():
     """returns all orders from db"""
-    with sqlite3.connect("./kennel.sqlite3") as conn:
+    with sqlite3.connect("./kneel.sqlite3") as conn:
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -44,7 +44,7 @@ def get_all_orders():
         for row in dataset:
 
             # Create an order instance from the current row
-            order = Order(
+            order = models.Order(
                 row['id'],
                 row['metal_id'],
                 row['size_id'],
